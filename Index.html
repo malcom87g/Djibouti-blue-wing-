@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Djibouti Blue Wings - Tableau de Bord Interactif</title>
+    <!-- Chosen Palette: Warm Neutrals (Tailwind Slate) with Sky Blue accent -->
+    <!-- Application Structure Plan: A 4-section SPA design ("Vue d'ensemble", "Le Marché", "Le Service", "Le Modèle Éco") using a main navigation bar. This thematic structure is more user-friendly for an investor or partner than simply mirroring the 7-part report. It groups related concepts logically (e.g., all financials/risks together). User flow: Land on Overview (the "hook"), then explore Market, Service, and Business model via the header nav. Sub-tabs within sections allow for deeper, focused data exploration (e.g., Market -> Clientele vs. Competition). -->
+    <!-- Visualization & Content Choices: 1) Exec Summary -> Goal: Compare -> Bar Chart (Travel Times) -> Interaction: Tooltip -> Justification: The core "why" of the business. (Chart.js). 2) Market -> Goal: Inform -> Doughnut Chart (Clientele) -> Interaction: Tooltip -> Justification: Show market segmentation. (Chart.js). 3) Competition -> Goal: Compare -> HTML Table -> Justification: Direct comparison of alternatives. (HTML/Tailwind). 4) Operations -> Goal: Organize -> Process Diagram -> Justification: Show operational flow simply. (HTML/Tailwind/Flexbox). 5) CAPEX -> Goal: Inform -> Bar Chart -> Interaction: Tooltip -> Justification: Visualize investment. (Chart.js). 6) Revenue -> Goal: Inform -> Pie Chart -> Interaction: Tooltip -> Justification: Show revenue mix. (Chart.js). -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .nav-btn {
+            @apply px-4 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-sky-100 hover:text-sky-700 transition-colors;
+        }
+        .nav-btn.active {
+            @apply bg-sky-600 text-white hover:bg-sky-700 hover:text-white;
+        }
+        .page-section {
+            display: none;
+        }
+        .page-section.active {
+            display: block;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 40vh;
+            max-height: 400px;
+        }
+        .tab-btn {
+            @apply px-4 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-100;
+        }
+        .tab-btn.active {
+            @apply bg-white text-sky-600 shadow-md;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <!-- Header / Navigation -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row justify-between items-center">
+            <div class="flex items-center space-x-2 mb-2 sm:mb-0">
+                <i class="fas fa-plane-departure text-sky-600 text-2xl"></i>
+                <h1 class="text-2xl font-bold text-slate-800">Djibouti Blue Wings</h1>
+            </div>
+            <div class="flex space-x-2" id="main-nav">
+                <button class="nav-btn active" data-page="page-overview">
+                    <i class="fas fa-home mr-1 opacity-70"></i>Vue d'ensemble
+                </button>
+                <button class="nav-btn" data-page="page-market">
+                    <i class="fas fa-users mr-1 opacity-70"></i>Le Marché
+                </button>
+                <button class="nav-btn" data-page="page-service">
+                    <i class="fas fa-water mr-1 opacity-70"></i>Le Service
+                </button>
+                <button class="nav-btn" data-page="page-business">
+                    <i class="fas fa-chart-pie mr-1 opacity-70"></i>Le Modèle Éco
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8">
+
+        <!-- ======================= -->
+        <!-- Page 1: Vue d'ensemble  -->
+        <!-- ======================= -->
+        <section id="page-overview" class="page-section active">
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold text-sky-700 mb-4">Révolutionner le Transport Djiboutien</h2>
+                <p class="text-lg text-slate-600 mb-6">
+                    Cette section présente la vision fondamentale de "Djibouti Blue Wings". Elle explore notre mission de connecter les sites clés de Djibouti et met en lumière l'opportunité unique de transformer radicalement les temps de trajet, ouvrant ainsi de nouvelles perspectives économiques et touristiques.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                    <div>
+                        <h3 class="text-xl font-semibold text-slate-700 mb-3">La Vision</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="font-bold text-slate-900">Mission</h4>
+                                <p class="text-slate-600">Connecter les principaux sites touristiques, économiques et côtiers de Djibouti grâce à un transport aérien rapide, sûr et spectaculaire. Offrir une alternative de luxe et d'efficacité.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900">L'Opportunité</h4>
+                                <p class="text-slate-600">Djibouti possède des atouts de classe mondiale (requins-baleines, Lac Assal) dont l'accès est long et fastidieux. L'hydravion transforme un trajet de 2-3 heures en un vol panoramique de 20 minutes.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-50 p-4 rounded-lg">
+                        <h3 class="text-xl font-semibold text-center text-slate-700 mb-3">Comparaison du Temps de Trajet (Djibouti <i class="fas fa-arrow-right mx-1"></i> Tadjoura)</h3>
+                        <div class="chart-container h-80 max-h-[350px]">
+                            <canvas id="travelTimeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================= -->
+        <!-- Page 2: Le Marché         -->
+        <!-- ======================= -->
+        <section id="page-market" class="page-section">
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold text-sky-700 mb-4">Analyse de l'Opportunité</h2>
+                <p class="text-lg text-slate-600 mb-6">
+                    Cette section analyse le marché potentiel pour "Djibouti Blue Wings". Explorez la segmentation de notre clientèle cible, de la forte demande touristique et militaire aux besoins logistiques, et comprenez notre avantage concurrentiel décisif par rapport aux solutions de transport existantes.
+                </p>
+
+                <div class="mb-4 border-b border-slate-200 flex justify-center space-x-2" id="market-tabs">
+                    <button class="tab-btn active" data-tab="market-clientele">
+                        <i class="fas fa-user-friends mr-1"></i>Clientèle Cible
+                    </button>
+                    <button class="tab-btn" data-tab="market-competition">
+                        <i class="fas fa-balance-scale mr-1"></i>Analyse Concurrentielle
+                    </button>
+                </div>
+
+                <!-- Market Tab 1: Clientele -->
+                <div id="market-clientele" class="tab-content active">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div class="bg-slate-50 p-4 rounded-lg">
+                            <h3 class="text-xl font-semibold text-center text-slate-700 mb-3">Segmentation du Marché Cible</h3>
+                            <div class="chart-container">
+                                <canvas id="marketChart"></canvas>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-slate-700 mb-3">Clientèle Potentielle</h3>
+                            <ul class="space-y-3 list-disc list-inside text-slate-600">
+                                <li><strong class="text-slate-800">Touristes Haut de Gamme:</strong> Plongeurs, vacanciers (Kempinski, Sheraton), éco-touristes (Tadjoura, Lac Assal).</li>
+                                <li><strong class="text-slate-800">Expatriés & Militaires:</strong> Forte communauté (bases US, FR, CN, JP) cherchant des escapades de week-end.</li>
+                                <li><strong class="text-slate-800">Affaires & Gouvernement:</strong> Transport rapide de personnel vers les infrastructures portuaires (Port de Tadjoura).</li>
+                                <li><strong class="text-slate-800">Services d'Urgence:</strong> Évacuations médicales (MedEvac) depuis des sites isolés.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Market Tab 2: Competition -->
+                <div id="market-competition" class="tab-content">
+                    <h3 class="text-xl font-semibold text-slate-700 mb-3">Avantage Concurrentiel</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full min-w-lg text-left table-auto rounded-lg overflow-hidden">
+                            <thead class="bg-slate-100 text-slate-700 font-semibold">
+                                <tr>
+                                    <th class="p-4">Mode de Transport</th>
+                                    <th class="p-4">Temps (Djib-Tadj)</th>
+                                    <th class="p-4">Flexibilité</th>
+                                    <th class="p-4">Expérience</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr class="bg-white">
+                                    <td class="p-4">Transport Terrestre (Voiture)</td>
+                                    <td class="p-4">~3-4 heures</td>
+                                    <td class="p-4">Moyenne</td>
+                                    <td class="p-4">Fatigante, routes difficiles</td>
+                                </tr>
+                                <tr class="bg-slate-50">
+                                    <td class="p-4">Transport Maritime (Ferry)</td>
+                                    <td class="p-4">~2.5+ heures</td>
+                                    <td class="p-4">Faible (horaires fixes)</td>
+                                    <td class="p-4">Lente, sujet aux conditions</td>
+                                </tr>
+                                <tr class="bg-white">
+                                    <td class="p-4">Hélicoptères</td>
+                                    <td class="p-4">~20-25 minutes</td>
+                                    <td class="p-4">Haute</td>
+                                    <td class="p-4">Très chère, réservée VVIP</td>
+                                </tr>
+                                <tr class="bg-sky-50 border-l-4 border-sky-500">
+                                    <td class="p-4 font-bold text-sky-700">Hydravion (Blue Wings)</td>
+                                    <td class="p-4 font-bold">~20 minutes</td>
+                                    <td class="p-4 font-bold">Haute (eau/terre)</td>
+                                    <td class="p-4 font-bold">Premium, panoramique, rapide</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================= -->
+        <!-- Page 3: Le Service        -->
+        <!-- ======================= -->
+        <section id="page-service" class="page-section">
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold text-sky-700 mb-4">Le Service et les Opérations</h2>
+                <p class="text-lg text-slate-600 mb-6">
+                    Découvrez concrètement ce que "Djibouti Blue Wings" propose. Cette section détaille notre portefeuille de services, de la navette régulière aux vols charters spécialisés, ainsi que notre plan opérationnel, y compris la flotte recommandée et l'infrastructure de base essentielle à notre succès.
+                </p>
+
+                <div class="mb-4 border-b border-slate-200 flex justify-center space-x-2" id="service-tabs">
+                    <button class="tab-btn active" data-tab="service-portfolio">
+                        <i class="fas fa-list-check mr-1"></i>Nos Services
+                    </button>
+                    <button class="tab-btn" data-tab="service-operations">
+                        <i class="fas fa-cogs mr-1"></i>Plan Opérationnel
+                    </button>
+                </div>
+
+                <!-- Service Tab 1: Portfolio -->
+                <div id="service-portfolio" class="tab-content active">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-slate-50 p-5 rounded-lg">
+                            <h3 class="font-semibold text-lg text-sky-700 mb-2"><i class="fas fa-route mr-2"></i>Liaisons Régulières</h3>
+                            <ul class="list-disc list-inside space-y-1 text-slate-600">
+                                <li><strong class="text-slate-800">Route Phare:</strong> Djibouti $\leftrightarrow$ Tadjoura</li>
+                                <li><strong class="text-slate-800">Route Loisir:</strong> Djibouti $\leftrightarrow$ Îles Moucha</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-5 rounded-lg">
+                            <h3 class="font-semibold text-lg text-sky-700 mb-2"><i class="fas fa-star mr-2"></i>Vols Charters</h3>
+                            <ul class="list-disc list-inside space-y-1 text-slate-600">
+                                <li>Vols Panoramiques (Lac Assal, Lac Abbé)</li>
+                                <li>Transferts Privés (Camps de luxe, Yachts)</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-5 rounded-lg">
+                            <h3 class="font-semibold text-lg text-sky-700 mb-2"><i class="fas fa-medkit mr-2"></i>Services Spécialisés</h3>
+                            <ul class="list-disc list-inside space-y-1 text-slate-600">
+                                <li>Évacuation Médicale (MedEvac)</li>
+                                <li>Support Maritime (Relève d'équipage)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Tab 2: Operations -->
+                <div id="service-operations" class="tab-content">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="text-xl font-semibold text-slate-700 mb-3">La Flotte</h3>
+                            <div class="bg-white border rounded-lg p-4">
+                                <h4 class="font-bold text-lg text-slate-800">Cessna 208 Caravan Amphibian</h4>
+                                <p class="text-slate-600 mt-1">1 à 2 appareils pour le démarrage.</p>
+                                <ul class="list-disc list-inside space-y-1 text-slate-600 mt-2">
+                                    <li><strong class="text-slate-800">Pourquoi ?</strong> "L'outil" standard de l'industrie (Maldives, Alaska).</li>
+                                    <li>Fiable, robuste, 9-10 passagers.</li>
+                                    <li>Maintenance connue.</li>
+                                    <li>Opère sur piste (Ambouli) et sur l'eau.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-slate-700 mb-3">Bases d'Opérations</h3>
+                            <div class="space-y-4">
+                                <div class="bg-slate-50 p-4 rounded-lg flex items-start space-x-3">
+                                    <i class="fas fa-industry text-2xl text-slate-500 mt-1"></i>
+                                    <div>
+                                        <h4 class="font-bold text-slate-800">Base Principale (Maintenance)</h4>
+                                        <p class="text-slate-600">Hangar à l'Aéroport d'Ambouli (JIB). Rinçage à l'eau douce quotidien (crucial contre la corrosion).</p>
+                                    </div>
+                                </div>
+                                <div class="bg-slate-50 p-4 rounded-lg flex items-start space-x-3">
+                                    <i class="fas fa-anchor text-2xl text-slate-500 mt-1"></i>
+                                    <div>
+                                        <h4 class="font-bold text-slate-800">Base "Eau" (Embarquement)</h4>
+                                        <p class="text-slate-600">Ponton dédié au port ou via un hôtel partenaire (ex: Kempinski) pour une expérience premium.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================= -->
+        <!-- Page 4: Le Modèle Éco     -->
+        <!-- ======================= -->
+        <section id="page-business" class="page-section">
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold text-sky-700 mb-4">Modèle Économique et Risques</h2>
+                <p class="text-lg text-slate-600 mb-6">
+                    Cette dernière section couvre les aspects financiers, réglementaires et stratégiques du projet. Visualisez les investissements clés (CAPEX) et les sources de revenus, comprenez les obstacles réglementaires, et analysez les risques majeurs ainsi que les facteurs clés de notre succès.
+                </p>
+
+                <div class="mb-4 border-b border-slate-200 flex flex-wrap justify-center gap-2" id="business-tabs">
+                    <button class="tab-btn active" data-tab="business-financials">
+                        <i class="fas fa-dollar-sign mr-1"></i>Finances
+                    </button>
+                    <button class="tab-btn" data-tab="business-regulatory">
+                        <i class="fas fa-gavel mr-1"></i>Réglementation
+                    </button>
+                    <button class="tab-btn" data-tab="business-risks">
+                        <i class="fas fa-exclamation-triangle mr-1"></i>Risques & Succès
+                    </button>
+                </div>
+
+                <!-- Business Tab 1: Financials -->
+                <div id="business-financials" class="tab-content active">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-slate-50 p-4 rounded-lg">
+                            <h3 class="text-xl font-semibold text-center text-slate-700 mb-3">Investissements Majeurs (CAPEX)</h3>
+                            <div class="chart-container h-80 max-h-[350px]">
+                                <canvas id="capexChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-lg">
+                            <h3 class="text-xl font-semibold text-center text-slate-700 mb-3">Sources de Revenus (Estimation)</h3>
+                            <div class="chart-container h-80 max-h-[350px]">
+                                <canvas id="revenueChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-6 bg-slate-50 p-4 rounded-lg">
+                        <h3 class="text-xl font-semibold text-slate-700 mb-3">Coûts Opérationnels (OPEX)</h3>
+                        <ul class="list-disc list-inside space-y-1 text-slate-600">
+                            <li><strong class="text-slate-800">Maintenance:</strong> Très élevée. La corrosion (eau salée, chaleur) est l'ennemi n°1.</li>
+                            <li><strong class="text-slate-800">Carburant (Jet A1):</strong> Coût variable le plus important.</li>
+                            <li><strong class="text-slate-800">Salaires:</strong> Pilotes et mécaniciens qualifiés (Seaplane Rating).</li>
+                            <li><strong class="text-slate-800">Assurances:</strong> Très élevées pour ce type d'opération.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Business Tab 2: Regulatory -->
+                <div id="business-regulatory" class="tab-content">
+                    <h3 class="text-xl font-semibold text-slate-700 mb-3">Cadre Légal et Partenariats</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-bold text-lg text-slate-800 mb-2">Autorisations Clés</h4>
+                            <ul class="list-disc list-inside space-y-2 text-slate-600">
+                                <li>Obtention d'un <strong class="text-slate-800">Certificat de Transporteur Aérien (CTA / AOC)</strong> auprès de l'Aviation Civile (ANAC).</li>
+                                <li>Coordination Maritime avec l'<strong class="text-slate-800">Autorité Portuaire (DPFZA)</strong> pour les opérations dans le port et les zones côtières.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg text-slate-800 mb-2">Partenariats Stratégiques</h4>
+                            <ul class="list-disc list-inside space-y-2 text-slate-600">
+                                <li><strong class="text-slate-800">Ministère du Tourisme:</strong> Intégrer le service dans la stratégie nationale.</li>
+                                <li><strong class="text-slate-800">Ministère de l'Environnement:</strong> Études d'impact (bruit, zones protégées).</li>
+                                <li><strong class="text-slate-800">Partenaire Local Solide:</strong> Indispensable pour naviguer l'administration.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Business Tab 3: Risks -->
+                <div id="business-risks" class="tab-content">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="text-xl font-semibold text-red-600 mb-3">Principaux Risques</h3>
+                            <ul class="list-disc list-inside space-y-2 text-slate-600">
+                                <li><strong class="text-red-700">Corrosion (Risque n°1):</strong> Une maintenance insuffisante peut détruire un appareil en quelques mois.</li>
+                                <li><strong class="text-slate-800">Réglementation:</strong> Lenteurs administratives pour l'obtention du CTA.</li>
+                                <li><strong class="text-slate-800">Marché:</strong> Dépendance au tourisme et à la présence étrangère.</li>
+                                <li><strong class="text-slate-800">Climat:</strong> Chaleur extrême (performances) et mer agitée.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-green-600 mb-3">Facteurs Clés de Succès</h3>
+                            <ul class="list-disc list-inside space-y-2 text-slate-600">
+                                <li><strong class="text-green-700">Maintenance Irréprochable:</strong> Culture de "rinçage à l'eau douce" obsessionnelle.</li>
+                                <li><strong class="text-slate-800">Partenariats B2B Solides:</strong> Contrats avec les grands hôtels et tour-opérateurs.</li>
+                                <li><strong class="text-slate-800">Soutien Gouvernemental:</strong> Être perçu comme un atout stratégique national.</li>
+                                <li><strong class="text-slate-800">L'Expérience Client:</strong> Vendre une expérience mémorable.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const chartLabelWrapper = (label) => {
+                const maxWords = 2;
+                const maxChars = 16;
+                const words = label.split(' ');
+                let lines = [];
+                let currentLine = '';
+                
+                if (words.length > maxWords) {
+                    for (let word of words) {
+                        if ((currentLine + word).length > maxChars) {
+                            lines.push(currentLine.trim());
+                            currentLine = '';
+                        }
+                        currentLine += word + ' ';
+                    }
+                    lines.push(currentLine.trim());
+                } else {
+                    lines.push(label);
+                }
+                return lines;
+            };
+
+            const defaultChartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: { size: 12 },
+                            padding: 15
+                        }
+                    },
+                    tooltip: {
+                        enabled: true,
+                        backgroundColor: '#334155',
+                        titleFont: { weight: 'bold' },
+                        bodyFont: { size: 12 },
+                        padding: 10,
+                        cornerRadius: 4
+                    }
+                },
+                scales: {
+                    y: {
+                        ticks: {
+                            font: { size: 12 },
+                            callback: function(value) {
+                                if (value >= 1000000) return (value / 1000000) + 'M $';
+                                if (value >= 1000) return (value / 1000) + 'K $';
+                                return value;
+                            }
+                        },
+                        grid: {
+                            color: '#e2e8f0'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: { size: 12 },
+                            callback: function(value) {
+                                return chartLabelWrapper(this.getLabelForValue(value));
+                            }
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            };
+            
+            function renderTravelTimeChart() {
+                const ctx = document.getElementById('travelTimeChart')?.getContext('2d');
+                if (!ctx) return;
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Ferry', 'Voiture', 'Hydravion (Blue Wings)'],
+                        datasets: [{
+                            label: 'Temps de trajet (minutes)',
+                            data: [150, 180, 20],
+                            backgroundColor: ['#64748b', '#94a3b8', '#0ea5e9'],
+                            borderColor: ['#475569', '#64748b', '#0284c7'],
+                            borderWidth: 1,
+                            borderRadius: 4
+                        }]
+                    },
+                    options: { ...defaultChartOptions, scales: { ...defaultChartOptions.scales, y: { ...defaultChartOptions.scales.y, ticks: { callback: (v) => v + ' min' } } } }
+                });
+            }
+
+            function renderMarketChart() {
+                const ctx = document.getElementById('marketChart')?.getContext('2d');
+                if (!ctx) return;
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Touristes Haut de Gamme', 'Expatriés & Militaires', 'Clients d\'Affaires', 'Services d\'Urgence'],
+                        datasets: [{
+                            label: 'Segmentation du Marché',
+                            data: [40, 30, 20, 10],
+                            backgroundColor: ['#0ea5e9', '#38bdf8', '#7dd3fc', '#bae6fd'],
+                            borderColor: '#ffffff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: { ...defaultChartOptions, scales: { x: { display: false }, y: { display: false } } }
+                });
+            }
+
+            function renderCapexChart() {
+                const ctx = document.getElementById('capexChart')?.getContext('2d');
+                if (!ctx) return;
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Achat Appareil (Cessna Caravan)', 'Infrastructure (Ponton, Hangar)', 'Frais de Certification'],
+                        datasets: [{
+                            label: 'Coût (Moyenne en USD)',
+                            data: [3250000, 750000, 150000],
+                            backgroundColor: ['#0ea5e9', '#38bdf8', '#7dd3fc'],
+                            borderWidth: 0,
+                            borderRadius: 4
+                        }]
+                    },
+                    options: defaultChartOptions
+                });
+            }
+
+            function renderRevenueChart() {
+                const ctx = document.getElementById('revenueChart')?.getContext('2d');
+                if (!ctx) return;
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Vols Panoramiques (Marge Élevée)', 'Transferts Charters Privés', 'Contrats B2B (Hôtels)', 'Liaisons Régulières'],
+                        datasets: [{
+                            label: 'Sources de Revenus (Estimées)',
+                            data: [35, 30, 20, 15],
+                            backgroundColor: ['#0ea5e9', '#38bdf8', '#7dd3fc', '#bae6fd'],
+                            borderColor: '#ffffff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: { ...defaultChartOptions, scales: { x: { display: false }, y: { display: false } } }
+                });
+            }
+
+            renderTravelTimeChart();
+            renderMarketChart();
+            renderCapexChart();
+            renderRevenueChart();
+            
+            const mainNav = document.getElementById('main-nav');
+            const pages = document.querySelectorAll('.page-section');
+            mainNav.addEventListener('click', (e) => {
+                const btn = e.target.closest('.nav-btn');
+                if (!btn) return;
+                
+                mainNav.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const pageId = btn.dataset.page;
+                pages.forEach(p => p.classList.remove('active'));
+                document.getElementById(pageId)?.classList.add('active');
+            });
+            
+            function setupTabs(tabContainerId) {
+                const tabContainer = document.getElementById(tabContainerId);
+                if (!tabContainer) return;
+                const tabButtons = tabContainer.querySelectorAll('.tab-btn');
+                const tabContents = tabContainer.parentElement.querySelectorAll('.tab-content');
+
+                tabContainer.addEventListener('click', (e) => {
+                    const btn = e.target.closest('.tab-btn');
+                    if (!btn) return;
+
+                    tabButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    const tabId = btn.dataset.tab;
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    document.getElementById(tabId)?.classList.add('active');
+                });
+            }
+
+            setupTabs('market-tabs');
+            setupTabs('service-tabs');
+            setupTabs('business-tabs');
+        });
+    </script>
+</body>
+</html>
